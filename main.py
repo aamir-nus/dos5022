@@ -9,18 +9,21 @@ This script demonstrates the complete workflow:
 5. Award status classification
 6. Agency/supplier clustering
 """
-import sys
 from pathlib import Path
+import sys
 
-# Add src to path
-sys.path.append(str(Path(__file__).parent / "src"))
+# Ensure src is in path for imports
+src_path = Path(__file__).parent / "src"
+if str(src_path) not in sys.path:
+    sys.path.insert(0, str(src_path))
 
-from src.download_data import download_dataset
-from src.preprocessing import preprocess_pipeline
-from src.visualization import TenderVisualizer
-from src.models.award_predictor import train_and_evaluate_models
-from src.models.award_classifier import train_and_evaluate_classifiers
-from src.models.clustering import perform_clustering_analysis
+# Import modules
+from download_data import download_dataset
+from preprocessing import preprocess_pipeline
+from visualization import TenderVisualizer
+from models.award_predictor import train_and_evaluate_models
+from models.award_classifier import train_and_evaluate_classifiers
+from models.clustering import perform_clustering_analysis
 
 
 def main():

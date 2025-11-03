@@ -53,11 +53,14 @@ class SpendPatternClusterer:
         # Scale features
         X_scaled = self.scaler.fit_transform(X)
         
+        # Create new model instance for agencies
+        agency_model = KMeans(n_clusters=self.n_clusters, random_state=42, n_init=10)
+        
         # Fit clustering model
-        self.model.fit(X_scaled)
+        agency_model.fit(X_scaled)
         
         # Add cluster labels
-        agency_features['cluster'] = self.model.labels_
+        agency_features['cluster'] = agency_model.labels_
         
         # Analyze clusters
         print("\n=== Agency Cluster Analysis ===")
@@ -91,14 +94,18 @@ class SpendPatternClusterer:
         
         X = supplier_features[feature_cols].fillna(0)
         
-        # Scale features
-        X_scaled = self.scaler.fit_transform(X)
+        # Scale features (use new scaler for suppliers)
+        supplier_scaler = StandardScaler()
+        X_scaled = supplier_scaler.fit_transform(X)
+        
+        # Create new model instance for suppliers
+        supplier_model = KMeans(n_clusters=self.n_clusters, random_state=42, n_init=10)
         
         # Fit clustering model
-        self.model.fit(X_scaled)
+        supplier_model.fit(X_scaled)
         
         # Add cluster labels
-        supplier_features['cluster'] = self.model.labels_
+        supplier_features['cluster'] = supplier_model.labels_
         
         # Analyze clusters
         print("\n=== Supplier Cluster Analysis ===")
