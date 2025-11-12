@@ -1,156 +1,174 @@
 # DOS5022 Tender Analysis Project - Summary
 
-## Project Completion Status: ✅ COMPLETE
+## Repository Structure
 
-This project successfully implements a comprehensive data science pipeline for analyzing Singapore government tender data.
-
-## Requirements Met
-
-### ✅ Repository Structure
 - Created on dev branch (working on feature branch)
 - `src/models` directory structure implemented
 - Using `uv` with Python 3.10 (NOT pip)
 
-### ✅ Data Acquisition
+### Data Acquisition - General Stats
+
 - **Source**: https://data.gov.sg/datasets/d_acde1106003906a75c3fa052592f2fcb/view
-- Automated download with fallback to sample data generation (1000 records)
-- Proper data structure with 9 columns covering tender information
+- **Dataset Size**: 18,021 records, cleaned to 11,915 unique tenders
+- **Scope**: 111 government agencies, 4,134 unique suppliers
+- **Total Value**: S$102 billion in awarded contracts
+- **Award Success Rate**: 94.1%
 
-### ✅ Machine Learning Capabilities
+### Machine Learning Capabilities
 
-#### 1. Award Amount Prediction
-Predicts tender award amounts from tender text and agency/category features:
-- **Models**: Random Forest, Gradient Boosting, Ridge Regression
-- **Features**: Agency, category, date features, text length/word count
-- **Best Model**: Ridge (MAE: $226k on log-transformed data)
+#### 1. Supplier Portfolio Analysis
 
-#### 2. Award Status Classification
-Classifies likelihood of "Awarded" vs "No award":
-- **Models**: Random Forest, Gradient Boosting, Logistic Regression
-- **Metrics**: Accuracy, Precision, Recall, F1, ROC AUC
-- **Best Model**: Gradient Boosting (F1: 0.79, Accuracy: 67.5%)
+Strategic supplier segmentation using K-Means clustering, then analyzing each cluster and assigning appropriate names. Subjective judgement was used to combine into three segements instead of 5/4 clusters:
 
-#### 3. Clustering Analysis
-Groups agencies/suppliers by spend patterns:
-- **Agency Clustering**: 3 clusters by spending patterns and diversity
-- **Supplier Clustering**: 3 clusters by performance and capabilities
-- **Risk Flags**: Identifies dependency and diversity issues
+- **5 clusters -> whittled to 4 clusters**: Based on total awards, agency diversity, contract consistency
+- **Key Insights**:
 
-### ✅ Data Processing & Visualization
-- Comprehensive preprocessing with feature engineering
-- 8 professional visualizations for EDA
-- Correlation analysis and temporal trends
+  - 4,133 active suppliers analyzed
+  - Market concentration: 17.7% controlled by top 10 suppliers
+
+#### 2. Predictive Commercial Risk Assessment
+
+Random Forest classifier for unusual award detection:
+
+- **Objective**: Flag tenders requiring commercial review
+- **Model**: Constrained Random Forest (overfitting prevention)
+- **Performance**: 86.8% test accuracy with temporal validation
+- **Risk Distribution**: 3.4% high-risk tenders, 96.6% normal tenders
+
+#### 3. Advanced Clustering Analysis
+
+Comprehensive clustering evaluation:
+
+- **Supplier Clustering**: Hierarchical performed best (Silhouette: 0.763), *K-Means chosen for complete coverage*
+- ~~**Agency Clustering**: K-Means performed best (Silhouette: 0.518)~~
+- **DBSCAN**: Limited success due to data characteristics
+- **Model Selection**: *K-Means preferred for complete cluster assignment*
 
 ## Technical Implementation
 
 ### Project Structure
+
 ```
 dos5022/
 ├── src/
 │   ├── download_data.py          # Data acquisition
-│   ├── preprocessing.py          # Feature engineering
+│   ├── preprocessing.py          # Feature engineering & data preparation
 │   ├── visualization.py          # EDA visualizations
 │   └── models/
-│       ├── award_predictor.py    # Award amount prediction
 │       ├── award_classifier.py   # Award status classification
 │       └── clustering.py         # Clustering & risk detection
+├── notebooks/                    # Analysis notebooks
+│   ├── 01_preprocessing.ipynb    # Data preprocessing pipeline
+│   ├── 02_modeling.ipynb         # Clustering analysis
+│   └── supplier clustering and risk prediction.ipynb  # Business analysis
 ├── main.py                       # Complete pipeline
 ├── pyproject.toml               # uv dependencies
+├── config.yaml                  # Configuration-driven approach
 ├── README.md                    # Main documentation
 ├── USAGE.md                     # Usage guide
 └── PROJECT_SUMMARY.md           # This file
 ```
 
-### Dependencies (via uv)
-- pandas, numpy (data processing)
-- scikit-learn (machine learning)
-- matplotlib, seaborn (visualization)
-- requests (data download)
+### Project Features
 
-### Outputs (17 files in data/)
-1. Raw and processed data (2 CSV files)
-2. Clustering results (2 CSV files)
-3. Trained models (6 PKL files)
-4. Visualizations (8 PNG files)
+- **Configuration-driven**: YAML-based configuration for reproducibility
+- **Temporal Validation**: Prevents data leakage in time-series data
+- **Overfitting Prevention**: Constrained model complexity and validation strategies
+- **Memory Optimization**: Efficient processing of large datasets (18,021 records)
 
-## Quality Assurance
+### Dependencies
 
-### ✅ Code Quality
-- Modular design with clear separation of concerns
-- Comprehensive docstrings and comments
-- Consistent code style
-- Fixed code review issues
+- **NOTE : project uses `uv` not `pip`**
+- create environment and install packages : `uv sync --all-groups`
+- activate virtual environment : `source .venv/bin/activate`
+- add new packages : `uv add <package name>`
 
-### ✅ Security
-- CodeQL scan: 0 vulnerabilities
-- No hardcoded credentials
-- Proper gitignore for data files
-- Safe file operations
+### Outputs (Comprehensive)
 
-### ✅ Testing
-- End-to-end pipeline tested
-- Individual modules verified
-- Clean environment test passed
-- All outputs generated successfully
+1. **Data Files**:
+
+   - Processed tender data (CSV) - 11,915 records, 24 features
+   - Agency clustering features (CSV) - 110 agencies
+   - Supplier clustering features (CSV) - 4,133 suppliers
+   - Original dataset (Excel) - 18,021 records
+2. **Models**:
+
+   - Supplier clustering model (PKL) - K-Means with scaler
+   - Commercial risk predictor (PKL) - Random Forest classifier
+   - Clustering results (CSV) - Agency and supplier assignments
+   - Model metadata (JSON) - Performance metrics and feature importance
+3. **Analysis Results**:
+
+   - Business analysis summary (JSON) - Complete strategic insights
+   - Model performance metrics
+   - Risk distribution analysis
+   - Supplier portfolio insights
 
 ## Usage
 
-### Quick Start
+### Jupyter Notebooks (Analysis)
+
 ```bash
-# Run complete pipeline
-uv run python main.py
+# Complete analysis pipeline
+jupyter notebooks/01_preprocessing.ipynb
+jupyter notebooks/02_modeling.ipynb
+jupyter notebooks/supplier clustering and risk prediction.ipynb
 ```
 
-### Individual Components
-```bash
-uv run python src/download_data.py
-uv run python src/preprocessing.py
-uv run python src/visualization.py
-uv run python src/models/award_predictor.py
-uv run python src/models/award_classifier.py
-uv run python src/models/clustering.py
-```
+## Business Intelligence Results
 
-## Results Summary
+### Dataset Overview
 
-### Dataset
-- 1000 tender records (713 awarded, 287 no award)
-- 8 agencies, 8 categories, 50 suppliers
-- Time period: 2020-2023
+- **11,915 tender records** (cleaned from 18,021 original records)
+- **111 government agencies**, **4,134 unique suppliers**
+- **Total Contract Value**: S$102 billion across awarded tenders
+- **Time Period**: 2020-2025 with temporal validation splits
+- **Award Success Rate**: 94.1%
 
-### Model Performance
+### Supplier Portfolio Analysis
 
-**Award Amount Prediction:**
-- Ridge Regression: R² = -0.0022, MAE = $226,319
-- Random Forest: R² = -0.1082, MAE = $228,987
-- Gradient Boosting: R² = -0.2664, MAE = $233,008
+**Strategic Segmentation - based on Subjective Analysis of Clusters:**
 
-Note: Negative R² indicates models performed below baseline. This is expected for sample data where relationships may not be strong.
+- **Large Scale High Value**: 1.4% of suppliers controlling 46.5% of market value
+- **Medium Scale Specialized**: 87.5% of suppliers in specialized roles (35.2% market value)
+- **Small Scale Broad Reach**: 11.2% of suppliers with agency relationships (18.2% market value)
 
-**Award Status Classification:**
-- Gradient Boosting: Accuracy = 67.5%, F1 = 0.79
-- Random Forest: Accuracy = 60.0%, F1 = 0.73
-- Logistic Regression: Accuracy = 54.5%, F1 = 0.65
+**Market Health Indicators:**
 
-**Clustering:**
-- Agencies: 3 clusters based on spending patterns
-- Suppliers: 3 clusters based on performance
-- Risk flags: 0 (sample data has good diversity)
+- **Market Concentration**: Moderate (17.7% controlled by top 10 suppliers)
+- **Dependency Risk**: 66.7% suppliers belong to the same agency (monitoring recommended)
 
-## Next Steps (Future Enhancements)
+### Commercial Risk Assessment
 
-1. **Real Data**: Replace sample data with actual data.gov.sg dataset
-2. **Feature Enhancement**: Add text embeddings for tender descriptions
-3. **Model Tuning**: Hyperparameter optimization with grid search
-4. **Additional Models**: Try XGBoost, LightGBM, Neural Networks
-5. **Web Dashboard**: Create interactive dashboard with Streamlit/Dash
-6. **API**: Build REST API for model predictions
-7. **Scheduled Updates**: Automate data refresh and model retraining
+**Model Performance:**
 
-## Conclusion
+- **Accuracy**: 86.8% on temporal validation (2020-2024 train, 2025 test)
+- **Risk Detection Logic**: Predict risk -> flag unusual awards (>2σ from agency means)
 
-This project successfully delivers a complete, production-ready data science pipeline for tender analysis. All requirements from the problem statement have been met, with additional features like comprehensive visualizations, multiple model comparisons, and risk flag detection.
+**Risk Distribution:**
 
-The code is well-structured, documented, tested, and secure. The project is ready for immediate use and can easily be extended with real data and additional features.
+- **High Risk Tenders**: 3.4% (384 out of 11,216 awarded tenders)
+- **Normal Risk Tenders**: 96.6%
+- **Class Imbalance**: Addressed with balanced class weights
 
-**Status**: ✅ COMPLETE AND READY FOR USE
+### Clustering Analysis
+
+**Supplier Clustering (Preferred: K-Means):**
+
+- **Silhouette Score**: 0.732 (excellent separation)
+- **Optimal Clusters**: clusters combined into 3 segments for strategic portfolio management
+- **Business Value**: Clear strategic segments for supplier relationship management
+
+## Strategic Business Insights
+
+### Supplier Relationship Management
+
+1. **Strategic Partnerships**: Focus on Large Scale High Value suppliers (1.4% controlling 46.5% of market)
+2. **SME Development**: Target Small Scale suppliers for capability building programs
+3. **Niche Protection**: Protect Medium Scale Specialized suppliers for category expertise
+4. **Diversification**: Encourage multi-agency supplier relationships to reduce dependency
+
+### Data-Driven Procurement Strategy
+
+1. **Risk Management**: Proactive identification of unusual award patterns
+2. **Performance Monitoring**: Supplier segment performance tracking and evaluation
