@@ -33,13 +33,10 @@ Cleans data, engineers features, and encodes categorical variables.
 uv run python src/visualization.py
 ```
 
-Generates 8 exploratory data analysis plots:
+Generates exploratory data analysis plots:
+
 - Award distribution
 - Award amounts distribution
-- Agency analysis
-- Category analysis
-- Temporal trends
-- Correlation heatmap
 - Agency clusters
 - Supplier clusters
 
@@ -50,6 +47,7 @@ uv run python src/models/award_predictor.py
 ```
 
 Trains 3 regression models to predict tender award amounts:
+
 - Random Forest
 - Gradient Boosting
 - Ridge Regression
@@ -61,6 +59,7 @@ uv run python src/models/award_classifier.py
 ```
 
 Trains 3 classification models to predict "Awarded" vs "No award":
+
 - Random Forest Classifier
 - Gradient Boosting Classifier
 - Logistic Regression
@@ -72,10 +71,12 @@ uv run python src/models/clustering.py
 ```
 
 Performs K-Means clustering on:
+
 - Agencies (by spending patterns)
 - Suppliers (by performance patterns)
 
 Identifies risk flags:
+
 - Low supplier diversity
 - Low category diversity
 - Single agency dependency
@@ -86,6 +87,7 @@ Identifies risk flags:
 All outputs are saved in `data/`:
 
 ### Data Files
+
 - `tender_data.csv` - Raw tender data
 - `tender_data_processed.csv` - Processed data with engineered features
 - `agency_clusters.csv` - Agency clustering results
@@ -93,10 +95,11 @@ All outputs are saved in `data/`:
 - `risk_flags.csv` - Identified risk flags (if any)
 
 ### Model Files
-- `award_amount_predictor_*.pkl` - Trained regression models
+
 - `award_status_classifier_*.pkl` - Trained classification models
 
 ### Visualizations
+
 - `visualizations/award_distribution.png`
 - `visualizations/award_amounts_distribution.png`
 - `visualizations/agency_analysis.png`
@@ -134,37 +137,4 @@ classifiers, class_results = train_and_evaluate_classifiers(preprocessor, df_pro
 
 # Clustering
 agency_clusters, supplier_clusters, risks = perform_clustering_analysis(preprocessor, df_processed)
-```
-
-## Development
-
-### Running Tests
-
-```bash
-# Test imports and basic functionality
-uv run python -c "
-from src.download_data import generate_sample_data
-from src.preprocessing import preprocess_pipeline
-df = generate_sample_data(100)
-preprocessor, df_processed = preprocess_pipeline()
-print(f'✓ Test passed: {df_processed.shape}')
-"
-```
-
-### Project Structure
-
-```
-dos5022/
-├── src/                    # Source code
-│   ├── download_data.py   # Data acquisition
-│   ├── preprocessing.py   # Feature engineering
-│   ├── visualization.py   # EDA visualizations
-│   └── models/           # ML models
-│       ├── award_predictor.py
-│       ├── award_classifier.py
-│       └── clustering.py
-├── data/                  # Generated files (gitignored)
-├── main.py               # Complete pipeline
-├── pyproject.toml        # Dependencies (uv)
-└── README.md            # Documentation
 ```
