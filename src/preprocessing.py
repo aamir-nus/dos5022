@@ -70,7 +70,13 @@ class TenderDataPreprocessor:
             project_root = Path(__file__).parent.parent
             filepath = project_root / filepath
 
-        df = pd.read_csv(filepath, nrows=nrows)
+        #check extension of the file
+        df = pd.DataFrame()
+        if str(filepath).split(".")[-1] == "csv":
+            df = pd.read_csv(filepath, nrows=nrows)
+        if str(filepath).split(".")[-1] == "xlsx":
+            df = pd.read_excel(filepath, nrows=nrows)
+
         print(f"Loaded {len(df)} records from {filepath}")
         return df
     
