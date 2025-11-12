@@ -1,0 +1,176 @@
+project:
+  name: "Singapore Government Tender Analysis"
+  version: "1.0.0"
+  description: "Data science pipeline for analyzing Singapore government tender data - Group 8"
+
+data:
+  source_file: "Datasets/GovernmentProcurementviaGeBIZ.xlsx"
+  processed_file: "Outputs/tender_data_processed.csv"
+
+  columns:
+    tender_no: "tender_no"
+    tender_description: "tender_description"
+    agency: "agency"
+    award_date: "award_date"
+    tender_detail_status: "tender_detail_status"
+    supplier_name: "supplier_name"
+    awarded_amt: "awarded_amt"
+
+
+# Feature engineering configuration
+features:
+  # Date-based features
+  date_features:
+    - "award_year"
+    - "award_month"
+    - "award_quarter"
+    - "award_day_of_week"
+
+  # Text-based features
+  text_features:
+    - "description_length"
+    - "description_word_count"
+    - "description_char_count"
+
+  # Categorical features for encoding
+  categorical_features:
+    - "agency"
+    - "supplier_name"
+    - "tender_detail_status"
+
+  # Numerical features
+  numerical_features:
+    - "awarded_amt"
+    - "description_length"
+    - "description_word_count"
+    - "award_year"
+    - "award_month"
+    - "award_quarter"
+
+  # Derived features
+  derived_features:
+    - "log_awarded_amt"
+    - "is_awarded"
+    - "award_amount_category"
+
+# Target variables for different modeling tasks
+targets:
+
+  classification:
+    primary: "is_awarded"
+    alternative: "award_amount_category"
+    description: "Predict if tender will be awarded (classification task)"
+
+  clustering:
+    agency_features:
+      - "total_spend"
+      - "avg_award_amount"
+      - "num_tenders"
+      - "num_suppliers"
+      - "unique_categories"
+
+    supplier_features:
+      - "total_awards"
+      - "avg_award_amount"
+      - "num_contracts"
+      - "num_agencies"
+      - "unique_categories"
+
+# Data preprocessing settings
+preprocessing:
+  missing_values:
+    awarded_amt: 0  # Fill missing award amounts with 0
+    supplier_name: "Unknown"  # Fill missing supplier names
+
+  categorical_encoding:
+    method: "label_encoder"  # Options: label_encoder, one_hot, target_encoding
+    handle_unknown: "ignore"
+
+  scaling:
+    method: "standard_scaler"  # Options: standard_scaler, min_max_scaler, robust_scaler
+
+  feature_selection:
+    variance_threshold: 0.01
+    correlation_threshold: 0.95
+
+# Model configurations
+models:
+
+  classification:
+    algorithms:
+      - "random_forest"
+      - "gradient_boosting"
+      - "logistic_regression"
+      - "svm"
+
+    hyperparameters:
+      random_forest:
+        n_estimators: 100
+        max_depth: 10
+        random_state: 42
+      gradient_boosting:
+        n_estimators: 100
+        learning_rate: 0.1
+        max_depth: 6
+        random_state: 42
+      logistic_regression:
+        random_state: 42
+        max_iter: 1000
+      svm:
+        random_state: 42
+        max_iter: 1000
+
+  clustering:
+    algorithms:
+      - "kmeans"
+      - "hierarchical"
+      - "dbscan"
+
+    hyperparameters:
+      kmeans:
+        n_clusters: 5
+        random_state: 42
+      hierarchical:
+        n_clusters: 5
+        linkage: "ward"
+      dbscan:
+        eps: 0.5
+        min_samples: 5
+
+# Evaluation metrics
+evaluation:
+
+  classification:
+    - "accuracy"
+    - "precision"
+    - "recall"
+    - "f1_score"
+    - "roc_auc_score"
+    - "confusion_matrix"
+
+  clustering:
+    - "silhouette_score"
+    - "calinski_harabasz_score"
+    - "davies_bouldin_score"
+
+# Output settings
+output:
+  models_dir: "models"
+  results_dir: "Outputs"
+  visualizations_dir: "Outputs/visualizations"
+
+  file_formats:
+    models: "pkl"
+    data: "csv"
+    plots: "png"
+    reports: "html"
+
+# Cross-validation settings
+cross_validation:
+  enabled: true
+  cv_folds: 5
+  shuffle: true
+  random_state: 42
+
+# Random state for reproducibility
+random_state: 42
